@@ -78,8 +78,8 @@ models:
   t_span_schedule: "cosine"  # "linear", "cosine"， 线性 or 余弦重排，
 
   # 自定义模型路径，比如训练后的模型
-  dit_checkpoint_path: null
-  dit_config_path: null
+  dit_checkpoint_path: "ft_model.pth"
+  dit_config_path: "configs/config_dit_mel_seed_uvit_xlsr_tiny.yml"
 
   defalut_original_model: "tiny"  # "tiny", "small", "base"  
                                   # 如果没有指定自定义的模型路径：dit_checkpoint_path， dit_config_path。
