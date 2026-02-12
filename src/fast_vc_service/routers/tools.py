@@ -21,8 +21,8 @@ async def get_session_data(
     
     Example:
     ```
-    curl -X GET "http://localhost:8042/tools/session/client0_5ad8c298" > outputs/encoded.txt
-    curl -X GET "http://localhost:8042/tools/session/client0_5ad8c298?date=2025-06-11" > outputs/encoded.txt
+    curl -X GET "http://localhost:18822/tools/session/client0_5ad8c298" > outputs/encoded.txt
+    curl -X GET "http://localhost:18822/tools/session/client0_5ad8c298?date=2025-06-11" > outputs/encoded.txt
     ```
     """
     try:

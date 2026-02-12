@@ -453,13 +453,13 @@ if __name__ == "__main__":
     # 查看状态 (Check Status)
     fast-vc status                          # 查看所有运行中的服务状态 (默认行为)
     fast-vc status -c configs/prod.yaml    # 通过配置文件查看特定服务状态
-    fast-vc status -p 8042                 # 通过端口号查看特定服务状态
+    fast-vc status -p 18822                 # 通过端口号查看特定服务状态
     fast-vc status --port 8043             # 长选项形式
     
     # 停止服务 (Stop Services)
     fast-vc stop                           # 停止所有运行中的服务 (默认行为)
     fast-vc stop -c configs/prod.yaml      # 通过配置文件停止特定服务
-    fast-vc stop -p 8042                   # 通过端口号停止特定服务
+    fast-vc stop -p 18822                   # 通过端口号停止特定服务
     fast-vc stop -p 8043 --force           # 强制停止服务（使用SIGTERM）
     fast-vc stop -f                        # 强制停止所有服务
     
@@ -479,7 +479,7 @@ if __name__ == "__main__":
     
     # 多服务实例管理示例 (Multi-Service Management Examples)
     # 1. 启动多个不同配置的服务
-    fast-vc serve -c configs/prod.yaml     # 启动生产环境服务 (端口: 8042)
+    fast-vc serve -c configs/prod.yaml     # 启动生产环境服务 (端口: 18822)
     fast-vc serve -c configs/dev.yaml      # 启动开发环境服务 (端口: 8043) 
     fast-vc serve -c configs/test.yaml     # 启动测试环境服务 (端口: 8044)
     

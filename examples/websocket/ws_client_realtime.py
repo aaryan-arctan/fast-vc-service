@@ -10,12 +10,13 @@ Usage:
     uv run examples/websocket/ws_client_realtime.py
 
     # With custom server URL and Opus encoding:
-    uv run examples/websocket/ws_client_realtime.py --url ws://myserver:8042/ws --encoding OPUS
+    uv run examples/websocket/ws_client_realtime.py --url ws://myserver:18822/ws --encoding OPUS
 """
 
 import asyncio
 import websockets
 import sounddevice as sd
+import soundfile as sf
 import numpy as np
 import json
 import queue
@@ -23,6 +24,7 @@ import uuid
 import sys
 import argparse
 from datetime import datetime
+from pathlib import Path
 from loguru import logger
 
 # Optional Opus support
@@ -140,7 +142,7 @@ def calc_chunk_frame(
 
 async def run_realtime_session(
     # server
-    url: str = "ws://localhost:8042/ws",
+    url: str = "ws://localhost:18822/ws",
     api_key: str = "test-key",
     # devices (sounddevice indices)
     input_device: int = 0,
@@ -199,6 +201,12 @@ async def run_realtime_session(
     # Flag used to signal shutdown
     running = True
 
+    # Collect received audio for saving
+    received_audio_chunks: list = []
+
+    # Persistent buffer for playback (keeps leftover bytes between callbacks)
+    playback_buffer = bytearray()
+
     # --- sounddevice callbacks (run on PortAudio thread) ---
 
     def mic_callback(indata, frames, time_info, status):
@@ -208,21 +216,30 @@ async def run_realtime_session(
         mic_queue.put(bytes(indata))
 
     def playback_callback(outdata, frames, time_info, status):
-        if status and playback_queue.qsize() > 0:
+        nonlocal playback_buffer
+        if status and (playback_queue.qsize() > 0 or len(playback_buffer) > 0):
             logger.warning(f"Playback output status: {status}")
+        
         bytes_needed = frames * 2  # int16 = 2 bytes per sample
-        data = b""
-        while len(data) < bytes_needed:
+        
+        # Pull chunks from queue into buffer until we have enough
+        while len(playback_buffer) < bytes_needed:
             try:
                 chunk = playback_queue.get_nowait()
-                data += chunk
+                playback_buffer.extend(chunk)
             except queue.Empty:
                 break
-        # Pad with silence if not enough data
-        if len(data) < bytes_needed:
-            data += b"\x00" * (bytes_needed - len(data))
-        # Only take exactly what we need (in case we got more)
-        outdata[:] = np.frombuffer(data[:bytes_needed], dtype=np.int16).reshape(-1, 1)
+        
+        # Extract exactly what we need
+        if len(playback_buffer) >= bytes_needed:
+            data = bytes(playback_buffer[:bytes_needed])
+            del playback_buffer[:bytes_needed]  # Remove used bytes, keep the rest
+        else:
+            # Not enough data - use what we have and pad with silence
+            data = bytes(playback_buffer) + b"\x00" * (bytes_needed - len(playback_buffer))
+            playback_buffer.clear()
+        
+        outdata[:] = np.frombuffer(data, dtype=np.int16).reshape(-1, 1)
 
     # --- Open audio streams ---
 
@@ -328,6 +345,7 @@ async def run_realtime_session(
                     if isinstance(response, bytes):
                         # Raw int16 PCM from server -> push to playback queue
                         playback_queue.put(response)
+                        received_audio_chunks.append(response)
                     else:
                         try:
                             data = json.loads(response)
@@ -431,6 +449,17 @@ async def run_realtime_session(
         except Exception:
             pass
 
+    # Save received audio to file
+    if received_audio_chunks:
+        output_dir = Path("outputs/realtime")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{session_id}_received_{samplerate_out}hz.wav"
+        
+        all_bytes = b"".join(received_audio_chunks)
+        audio_data = np.frombuffer(all_bytes, dtype=np.int16).astype(np.float32) / 32768.0
+        sf.write(output_path, audio_data, samplerate_out)
+        logger.info(f"Saved received audio ({len(audio_data)} samples @ {samplerate_out}Hz): {output_path}")
+
     logger.info(f"Session {session_id} ended.")
 
 
@@ -446,8 +475,8 @@ def parse_args():
     parser.add_argument(
         "--url",
         type=str,
-        default="ws://localhost:8042/ws",
-        help="WebSocket server URL (default: ws://localhost:8042/ws)",
+        default="ws://localhost:18822/ws",
+        help="WebSocket server URL (default: ws://localhost:18822/ws)",
     )
     parser.add_argument(
         "--api-key",
@@ -473,7 +502,7 @@ def parse_args():
         "--samplerate-out",
         type=int,
         default=22050,
-        choices=[8000, 16000, 22050],
+        choices=[8000, 16000, 22050, 48000],
         help="Output sample rate from server (default: 22050)",
     )
     parser.add_argument(

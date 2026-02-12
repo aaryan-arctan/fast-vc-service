@@ -17,7 +17,7 @@ from fast_vc_service.utils import Singleton
 
 class AppConfig(BaseModel):
     host: str = "0.0.0.0"
-    port: int = 8042
+    port: int = 18822
     workers: int = 2  # Number of workers for uvicorn
     receive_timeout: int = 60*8  # Timeout for receiving audio bytes in seconds
     log_dir: str = "logs"
