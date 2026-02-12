@@ -16,7 +16,7 @@ dependencies = [
     "pydantic==2.11.5",
     "numpy==1.26.4",
     "resampy==0.4.3",
-    "opuslib==3.0.1",
+
     "pyyaml==6.0.2",
     "torch==2.4.0",
     "torchvision==0.19.0",
@@ -39,7 +39,8 @@ dependencies = [
     "python-dotenv==1.1.0",
     "psutil==7.0.0",
     "fire==0.7.0",
-    "onnxruntime-gpu>=1.22.0",
+    "onnxruntime-gpu>=1.22.0; sys_platform != 'darwin'",
+    "onnxruntime>=1.22.0; sys_platform == 'darwin'",
     "openpyxl>=3.1.5",
     "ipykernel==6.29.5",
     "pandas==2.3.0",
