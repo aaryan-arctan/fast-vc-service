@@ -383,7 +383,7 @@ if __name__ == "__main__":
                        help="Target sample rate in Hz (must be Opus compatible: 8000, 12000, 16000, 24000, 48000)")
     
     parser.add_argument("--url", 
-                        default="ws://localhost:8042/ws", 
+                        default="ws://localhost:18822/ws", 
                         help="WebSocket URL")
     
     parser.add_argument("--stream-id",

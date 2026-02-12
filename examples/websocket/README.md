@@ -48,7 +48,7 @@ After selection, the client connects to the server and begins streaming. Press *
 
 | Flag | Default | Description |
 |---|---|---|
-| `--url` | `ws://localhost:8042/ws` | WebSocket server URL |
+| `--url` | `ws://localhost:18822/ws` | WebSocket server URL |
 | `--api-key` | `test-key` | API key for authentication |
 | `--encoding` | `PCM` | Audio encoding: `PCM` or `OPUS` |
 | `--samplerate` | `16000` | Mic capture sample rate (Hz). Choices: 8000, 12000, 16000, 24000, 48000 |
@@ -65,7 +65,7 @@ uv run examples/websocket/ws_client_realtime.py
 
 # Opus encoding with custom server
 uv run examples/websocket/ws_client_realtime.py \
-    --url ws://myserver:8042/ws \
+    --url ws://myserver:18822/ws \
     --encoding OPUS \
     --bitrate 64000
 
@@ -91,7 +91,7 @@ Configuration is done by editing the `get_inputs()` function inside the script. 
 
 | Parameter | Default | Description |
 |---|---|---|
-| `url` | `ws://localhost:8042/ws` | WebSocket server URL |
+| `url` | `ws://localhost:18822/ws` | WebSocket server URL |
 | `api_key` | `test-key` | API key |
 | `src_wavs` | `["resources/srcs/female-0-16khz.wav"]` | List of input WAV file paths |
 | `output_wav_dir` | `outputs/ws_client` | Directory for converted output files |

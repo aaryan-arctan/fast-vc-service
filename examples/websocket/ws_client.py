@@ -33,7 +33,7 @@ class SessionIDTypeEnum(Enum):
 
 class Inputs(BaseModel):
     # server params
-    url: str = "ws://localhost:8042/ws"  # WebSocket URL
+    url: str = "ws://localhost:18822/ws"  # WebSocket URL
     api_key: str = "test-key"  # API key for authentication
     
     # concurrency params
