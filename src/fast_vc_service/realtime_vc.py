@@ -551,8 +551,8 @@ class RealtimeVoiceConversion:
         
         in_data = librosa.to_mono(in_data.T)  # 转换完之后的indata shape: (11025,), max=1.0116995573043823, min=-1.0213052034378052
         
-        # 1. vad
-        self._vad(in_data, session) 
+        # 1. skip vad - always treat as speech detected
+        session.vad_speech_detected = True
         
         # 2. preprocessing
         self._preprocessing(in_data, session) 
@@ -594,11 +594,8 @@ class RealtimeVoiceConversion:
         # 40ms + 10ms + 20ms = 70ms  if zc_duration = 10ms
         # 80ms + 20ms + 20ms = 120ms if zc_duration = 20ms
         
-        # vad flag
-        is_speech_detected = "Y" if session.vad_speech_detected else "N"
-        if session.set_speech_detected_false_at_end_flag:
-            session.vad_speech_detected = False
-            session.set_speech_detected_false_at_end_flag = False
+        # vad flag (always Y since VAD is disabled)
+        is_speech_detected = "Y"
         
         if self.cfg.save_output:  # save output chunk
             session.add_chunk_output(session.out_data)
