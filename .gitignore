@@ -1,7 +1,13 @@
 ### 模型优化产物 ###
 *.onnx          # ONNX中间模型
+*.pth           # PyTorch model checkpoints
+*.safetensors   # Hugging Face safetensors format
+*.bin           # Binary model weights
+*.pb            # TensorFlow protocol buffer models
 trt_models/*    # TensorRT优化后模型[6](@ref)
 quantized/      # 量化校准数据
+checkpoints/    # Model checkpoints directory
+models/         # Model storage directory
 
 ### 开发环境 ###
 # IDE配置
