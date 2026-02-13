@@ -88,7 +88,8 @@ class ModelFactory:
         self.vocoder_fn = self._load_vocoder_fn()
         self.semantic_fn = self._load_semantic_fn() 
         self.to_mel, self.mel_fn_args = self._load_mel()
-        self.vad_model = self._load_vad_model()
+        # VAD model disabled - always treat input as speech
+        # self.vad_model = self._load_vad_model()
         self.f0_fn = self._load_f0_fn() if self.is_f0 else None
         self.retrieval_fn = self._load_retrieval() if self.cfg.is_retrieval else None
         
@@ -107,9 +108,6 @@ class ModelFactory:
             "to_mel": self.to_mel,
             "mel_fn_args": self.mel_fn_args,
             "f0_fn": self.f0_fn,
-            
-            # additional models
-            "vad_model": self.vad_model,
         }
         return models
     
