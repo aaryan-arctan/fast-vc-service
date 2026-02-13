@@ -443,9 +443,15 @@ async def websocket_endpoint(websocket: WebSocket):
                 logger.info(f"{session_log_id} | Audio buffer cleared. ")
             
             if session:
-                # 创建后台任务防止阻塞
-                asyncio.create_task(session.async_save_and_cleanup())
-                logger.info(f"{session_log_id} | Session save and cleanup task created")
+                # Await save/cleanup directly so the ThreadPoolExecutor
+                # thread finishes before the event-loop shuts down.
+                # This runs inside the finally block *after* the WS is
+                # already closed, so it won't block the client.
+                try:
+                    await session.async_save_and_cleanup()
+                    logger.info(f"{session_log_id} | Session save and cleanup completed")
+                except Exception as save_err:
+                    logger.error(f"{session_log_id} | Session save/cleanup error: {save_err}")
                                     
         except Exception as e:
             logger.error(f"{session_log_id} | Error during cleanup: {e}\n{traceback.format_exc()}")

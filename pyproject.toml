@@ -46,6 +46,10 @@ dependencies = [
     "ipykernel==6.29.5",
     "pandas==2.3.0",
     "faiss-cpu>=1.12.0",
+    "livekit>=1.0.0",
+    "livekit-plugins-noise-cancellation~=0.2",
+    "aiohttp>=3.9.0",
+    "uvloop>=0.21.0; sys_platform != 'win32'",
 ]
 
 
